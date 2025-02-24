@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import useCustomQuery from "../hooks/useCustomQuery";
 import { MyContext } from "../hooks/DataContext";
@@ -36,6 +37,9 @@ const SignIn = () => {
   });
 
   useEffect(() => {
+    console.log("Success:", successMessage);
+    console.log("Error:", errorMessage);
+
     if (isSuccess && successMessage) {
       const decodedToken = jwtDecode(data?.encoded_token);
       localStorage.setItem("userRole", decodedToken?.role);
@@ -46,13 +50,11 @@ const SignIn = () => {
       states.setToken(data?.encoded_token);
       localStorage.setItem("encoded_token", `${data?.encoded_token}`);
 
-      //navigate("/live-ltp", { replace: true });
-      // ✅ Navigate to LiveLtpPage after successful login
       navigate("/layout", { replace: true });
     } else if (isError) {
       toast.error(errorMessage);
     }
-  }, [successMessage, errorMessage, data, isSuccess, loading, isError]);
+  }, [successMessage, errorMessage, data, isSuccess, isError]);
 
   const onSubmit = (formData) => {
     const payload = {
@@ -103,7 +105,7 @@ const SignIn = () => {
                   {...field}
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 text-black dark:text-black"
                 />
               )}
             />
@@ -127,8 +129,7 @@ const SignIn = () => {
                     {...field}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    //className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
-                    className="w-full p-3 border rounded-lg dark:bg-gray-700 text-black dark:text-white focus:ring focus:ring-blue-400"
+                    className="w-full p-3 border rounded-lg dark:bg-gray-700 text-black dark:text-black focus:ring focus:ring-blue-400"
                   />
                 )}
               />
@@ -167,6 +168,9 @@ const SignIn = () => {
           </p>
         </div>
       </motion.div>
+
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </motion.div>
   );
 };
@@ -180,6 +184,7 @@ export default SignIn;
 // import { jwtDecode } from "jwt-decode";
 // import useCustomQuery from "../hooks/useCustomQuery";
 // import { MyContext } from "../hooks/DataContext";
+// import { motion } from "framer-motion";
 
 // const SignIn = () => {
 //   const {
@@ -195,7 +200,6 @@ export default SignIn;
 //   const states = useContext(MyContext);
 //   const navigate = useNavigate();
 //   const [showPassword, setShowPassword] = useState(false);
-//   const [acceptTerms, setAcceptTerms] = useState(false);
 
 //   const {
 //     control,
@@ -210,43 +214,19 @@ export default SignIn;
 //     mode: "onChange",
 //   });
 
-//   // useEffect(() => {
-//   //   if (isSuccess && successMessage) {
-//   //     const decodedToken = jwtDecode(data?.encoded_token);
-//   //     localStorage.setItem("userRole", decodedToken?.role);
-
-//   //     if (decodedToken?.role === "admin") {
-//   //       navigate("/admin", { replace: true });
-//   //     } else if (decodedToken?.role === "user") {
-//   //       navigate("/user", { replace: true });
-//   //     } else {
-//   //       navigate("/", { replace: true });
-//   //     }
-
-//   //     toast.success(successMessage);
-//   //     reset();
-//   //     setAcceptTerms(false);
-//   //     states.setToken(data?.encoded_token);
-//   //     localStorage.setItem("encoded_token", `${data?.encoded_token}`);
-//   //     localStorage.setItem("public_token", `${data?.public_token}`);
-//   //   } else if (isError) {
-//   //     toast.error(errorMessage);
-//   //   }
-//   // }, [successMessage, errorMessage, data, isSuccess, loading, isError]);
-
 //   useEffect(() => {
 //     if (isSuccess && successMessage) {
 //       const decodedToken = jwtDecode(data?.encoded_token);
 //       localStorage.setItem("userRole", decodedToken?.role);
 
+//       console.log("success message", successMessage);
 //       toast.success(successMessage);
 
 //       reset();
 //       states.setToken(data?.encoded_token);
 //       localStorage.setItem("encoded_token", `${data?.encoded_token}`);
 
-//       // 👇 Redirect user to LiveLtp.jsx after login
-//       navigate("/live-ltp", { replace: true });
+//       navigate("/layout", { replace: true });
 //     } else if (isError) {
 //       toast.error(errorMessage);
 //     }
@@ -256,36 +236,49 @@ export default SignIn;
 //     const payload = {
 //       email: formData.email,
 //       password: formData.password,
-//       terms: acceptTerms,
 //     };
 //     sendRequest("POST", "/api/auth/signin", payload);
 //   };
 
 //   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
-//       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-//         {/* Heading */}
-//         <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white">
-//           Sign In to Your Account
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       exit={{ opacity: 0 }}
+//       className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 to-indigo-600 px-4"
+//     >
+//       <motion.div
+//         initial={{ y: -50, opacity: 0 }}
+//         animate={{ y: 0, opacity: 1 }}
+//         transition={{ duration: 0.5 }}
+//         className="w-full max-w-md bg-white rounded-lg shadow-xl p-6"
+//       >
+//         <h2 className="text-center text-3xl font-bold text-gray-800">
+//           Welcome Back
 //         </h2>
+//         <p className="text-center text-gray-600 mb-6">Sign in to continue</p>
 
-//         {/* Form */}
-//         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-//           {/* Email */}
+//         <form onSubmit={handleSubmit(onSubmit)}>
+//           {/* Email Field */}
 //           <div className="mb-4">
-//             <label className="block text-gray-700 dark:text-gray-300">
-//               Email
-//             </label>
+//             <label className="block text-gray-700">Email</label>
 //             <Controller
 //               name="email"
 //               control={control}
-//               rules={{ required: "Email is required" }}
+//               rules={{
+//                 required: "Email is required",
+//                 pattern: {
+//                   value: /^\S+@\S+\.\S+$/,
+//                   message: "Enter a valid email",
+//                 },
+//               }}
 //               render={({ field }) => (
 //                 <input
 //                   {...field}
 //                   type="email"
 //                   placeholder="Enter your email"
-//                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+//                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white"
+//                   style={{ color: "black" }} // ✅ Force text to always be black
 //                 />
 //               )}
 //             />
@@ -294,11 +287,9 @@ export default SignIn;
 //             )}
 //           </div>
 
-//           {/* Password */}
+//           {/* Password Field */}
 //           <div className="mb-4">
-//             <label className="block text-gray-700 dark:text-gray-300">
-//               Password
-//             </label>
+//             <label className="block text-gray-700">Password</label>
 //             <div className="relative">
 //               <Controller
 //                 name="password"
@@ -309,14 +300,16 @@ export default SignIn;
 //                     {...field}
 //                     type={showPassword ? "text" : "password"}
 //                     placeholder="Enter your password"
-//                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+//                     className="w-full p-3 border rounded-lg bg-white focus:ring focus:ring-blue-400"
+//                     style={{ color: "black" }} // ✅ Force text to always be black
 //                   />
 //                 )}
 //               />
+//               {/* Show/Hide Password Button */}
 //               <button
 //                 type="button"
 //                 onClick={() => setShowPassword(!showPassword)}
-//                 className="absolute right-3 top-3 text-gray-500 dark:text-gray-300"
+//                 className="absolute right-3 top-3 text-gray-500"
 //               >
 //                 {showPassword ? "🙈" : "👁️"}
 //               </button>
@@ -326,46 +319,28 @@ export default SignIn;
 //             )}
 //           </div>
 
-//           {/* Terms & Conditions */}
-//           <div className="mb-4 flex items-center">
-//             <input
-//               type="checkbox"
-//               id="terms"
-//               checked={acceptTerms}
-//               onChange={() => setAcceptTerms(!acceptTerms)}
-//               className="mr-2"
-//             />
-//             <label
-//               htmlFor="terms"
-//               className="text-gray-700 dark:text-gray-300 text-sm"
-//             >
-//               I accept the{" "}
-//               <a href="#" className="text-blue-500">
-//                 terms & conditions
-//               </a>
-//             </label>
-//           </div>
-
-//           {/* Sign In Button */}
-//           <button
+//           {/* Submit Button */}
+//           <motion.button
+//             whileHover={{ scale: 1.05 }}
+//             whileTap={{ scale: 0.95 }}
 //             type="submit"
-//             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold"
+//             className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white py-2 rounded-lg font-semibold"
 //           >
 //             {loading ? "Signing in..." : "Sign In"}
-//           </button>
+//           </motion.button>
 //         </form>
 
-//         {/* Links */}
-//         <div className="text-center mt-4 text-gray-700 dark:text-gray-300">
+//         {/* Sign Up Link */}
+//         <div className="text-center mt-4 text-gray-700">
 //           <p>
 //             Don't have an account?{" "}
-//             <Link to="/signup" className="text-blue-500">
+//             <Link to="/signup" className="text-indigo-500 hover:underline">
 //               Sign Up
 //             </Link>
 //           </p>
 //         </div>
-//       </div>
-//     </div>
+//       </motion.div>
+//     </motion.div>
 //   );
 // };
 
